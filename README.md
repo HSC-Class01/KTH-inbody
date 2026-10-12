@@ -1,42 +1,35 @@
-# LG전자 DART Financial Analysis
+[![🔗 대시보드 바로가기](https://img.shields.io/badge/%F0%9F%94%97-%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C_%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-149e95?style=for-the-badge)](https://hsc-class01.github.io/KTH-inbody/)
 
-[![🔗 대시보드 바로가기](https://img.shields.io/badge/대시보드-바로가기-8CCFFF?style=for-the-badge)](https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY/)
+# 인바디 DART Financial Agent
 
-LG전자(066570)의 DART 사업보고서·반기보고서·분기보고서 및 연결 재무제표를 2010년부터 수집하고 주요 수치와 재무비율을 분석합니다.
+인바디(041830)의 DART 사업보고서, 반기보고서, 분기보고서에서 2010년부터 가능한 재무자료를 수집·분석하고 GitHub Pages에서 시각화합니다.
 
-## 설치 및 실행
-1. https://opendart.fss.or.kr/ 에서 Open DART 인증키 발급
-2. GitHub 저장소 Settings → Secrets and variables → Actions → New repository secret
-3. Name `DART_API_KEY`, Value에 발급받은 API 키 저장 (코드에 직접 입력하지 마세요)
-4. Actions → Monthly DART update → Run workflow로 최초 실행
-5. Settings → Pages → Deploy from a branch → `main` / `/docs` 선택
-6. README 배지 URL의 `YOUR_GITHUB_USERNAME`과 `YOUR_REPOSITORY`를 실제 저장소에 맞게 변경
-7. 저장소 우측 About의 톱니바퀴 → Website에 GitHub Pages 주소 입력
+## 최초 설치
+1. [OpenDART](https://opendart.fss.or.kr/)에서 API 인증키 발급.
+2. GitHub 저장소 **Settings → Secrets and variables → Actions → New repository secret** 에서 이름 `DART_API_KEY`, 값은 발급받은 키를 등록. API 키를 소스코드에 적지 마세요.
+3. Settings → Actions → General에서 워크플로우의 저장소 쓰기 권한(Contents: write)을 허용합니다.
+4. Actions → **Update InBody DART financials** → **Run workflow**로 최초 수집.
+5. Settings → Pages → Deploy from a branch → `main` / `docs` → Save.
+6. 저장소 우측 About → 톱니바퀴 → Website에 `https://hsc-class01.github.io/KTH-inbody/` 입력.
 
-## 자동 업데이트
-매월 1일 00:17 UTC (한국시간 09:17)에 GitHub Actions가 실행됩니다. GitHub 예약 실행은 시스템 사정으로 지연될 수 있습니다.
+## 업데이트
+GitHub Actions는 매일 UTC 15:17에 호출되지만 한국시간 매월 **1일 00:17**에만 수집합니다. 최초 수동 실행은 날짜 조건을 건너뜁니다. 예약 작업은 GitHub 사정으로 지연될 수 있습니다.
 
-## 생성 파일
-- `data/raw/reports/`: DART 문서 ZIP (API 제공 성공 시)
-- `data/raw/<접수번호>.json`: 원본 재무제표 API 응답
-- `data/processed/filings.csv`: 수집 공시 목록
-- `data/processed/financial_facts.csv`: 계정별 원자료
-- `data/processed/dashboard_metrics.csv`: 주요 수치 및 계산 비율
-- `docs/index.html`: GitHub Pages 대시보드
-
-## 주요 지표
-매출액, 매출원가, 매출총이익, 영업이익, 당기순이익, 자산·부채·자본, 유동자산·유동부채, 영업활동현금흐름, 매출총이익률, 영업이익률, 순이익률, 유동비율, 부채비율, 자기자본비율.
+## 수치와 결측
+- Annual: 사업보고서, Half-year: 반기 누적, Quarterly: Q1 원본 / Q2·Q3·Q4 누적 실적 차감.
+- 재무상태표는 분기말 시점 금액이고 손익/현금흐름은 기간 실적입니다. 연결(CFS) 우선, 없으면 별도(OFS) 사용. 연결·별도 간 차감은 하지 않습니다.
+- 지표: 매출, 영업이익, 순이익, 자산, 부채, 자본, 유동자산, 유동부채, 현금, 영업현금흐름, 영업/순이익률, 부채/유동비율, ROA/ROE.
+- DART 전체 재무제표 API는 과거 2010~2014년 자료를 제공하지 않을 수 있습니다. 없는 자료를 추정하지 않습니다. ROA/ROE는 기말 잔액을 사용한 간이 비율입니다.
+- 실제 수집에 실패한 경우 기존 대시보드 데이터를 덮어쓰지 않습니다.
 
 ## 국내 Peer Firms (참고)
-| 기업 | 종목코드 | 비교 범위 |
-|---|---:|---|
-| 삼성전자 | 005930 | 가전·전자 종합기업 |
-| 삼성전기 | 009150 | 전자부품 |
-| 위닉스 | 044340 | 생활가전 일부 제품군 |
+| 회사 | 종목코드 | 사업 유사성 | 차이 |
+|---|---|---|---|
+| 셀바스헬스케어 | 208370 | 건강측정·의료기기 | 제품 포트폴리오 상이 |
+| 비스토스 | 419540 | 생체신호 측정기기 | 체성분 중심 아님 |
+| 휴비츠 | 065510 | 측정·진단 의료기기 | 안과 중심 |
 
-현재 자동 수집 대상은 LG전자입니다. Peer 기업 수치는 별도 수집 로직을 추가해야 합니다.
+Peer 업체의 재무정보 자동 수집은 본 버전에 포함되지 않았습니다.
 
-## 데이터 주의사항
-- DART 전체 재무제표 API의 연도별 제공 범위·계정 체계에 차이가 있어 2010~2014년 데이터는 원문 보고서 보완이 필요할 수 있습니다. OpenDART의 재무제표 API 설명은 2015년 이후 제공으로 안내합니다.
-- 분기/반기 손익 항목은 누적 금액일 수 있어 분기 단독 비교 시 기간 차분 검증이 필요합니다.
-- GitHub Actions workflow 파일은 숨김 경로 `.github/workflows`에 있어야 자동 실행됩니다. ZIP에는 필요한 숨김 파일을 포함했고 `.DS_Store`, `__MACOSX`는 포함하지 않았습니다.
+## 구성
+`agent.py`: DART 재무데이터 수집 · `docs/index.html`: 대시보드 · `docs/data.json`: 수집 결과 · `.github/workflows/update.yml`: 정기 실행.
