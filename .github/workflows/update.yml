@@ -26,6 +26,7 @@ jobs:
         run: |
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
 
           path = Path("docs/data.json")
@@ -34,7 +35,7 @@ jobs:
           except (OSError, json.JSONDecodeError):
               data = {}
           needs_initial_data = not data.get("updated_at") or not data.get("annual")
-          with open("$GITHUB_OUTPUT", "a", encoding="utf-8") as output:
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
               output.write(f"initial={str(needs_initial_data).lower()}\n")
           PY
       - name: Check KST first day
