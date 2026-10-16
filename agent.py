@@ -5,7 +5,7 @@ import requests
 ROOT=Path(__file__).resolve().parent
 API="https://opendart.fss.or.kr/api/"
 KEY=os.environ.get("DART_API_KEY")
-FIELDS={"매출액":"revenue","영업이익":"operating_profit","당기순이익":"net_income","자산총계":"assets","부채총계":"liabilities","자본총계":"equity","유동자산":"current_assets","유동부채":"current_liabilities","현금및현금성자산":"cash","영업활동현금흐름":"operating_cash_flow","영업활동으로인한현금흐름":"operating_cash_flow","수익(매출액)":"revenue"}
+FIELDS={"매출액":"revenue","수익(매출액)":"revenue","영업이익":"operating_profit","영업이익(손실)":"operating_profit","영업손실":"operating_profit","당기순이익":"net_income","당기순이익(손실)":"net_income","당기순손실":"net_income","당기순손익":"net_income","자산총계":"assets","부채총계":"liabilities","자본총계":"equity","유동자산":"current_assets","유동부채":"current_liabilities","현금및현금성자산":"cash","영업활동현금흐름":"operating_cash_flow","영업활동으로인한현금흐름":"operating_cash_flow"}
 def api(name,**params):
  for n in range(4):
   try:
