@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '17 15 * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - 'agent.py'
+      - 'requirements.txt'
+      - '.github/workflows/update.yml'
 permissions:
   contents: write
 concurrency:
@@ -16,20 +21,36 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Check whether initial data is needed
+        id: state
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/data.json")
+          try:
+              data = json.loads(path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError):
+              data = {}
+          needs_initial_data = not data.get("updated_at") or not data.get("annual")
+          with open("$GITHUB_OUTPUT", "a", encoding="utf-8") as output:
+              output.write(f"initial={str(needs_initial_data).lower()}\n")
+          PY
       - name: Check KST first day
         id: check
         run: |
           if [ "$(TZ=Asia/Seoul date +%d)" = "01" ]; then echo "yes=true" >> "$GITHUB_OUTPUT"; else echo "yes=false" >> "$GITHUB_OUTPUT"; fi
       - name: Install dependencies
-        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.yes == 'true'
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.yes == 'true' || steps.state.outputs.initial == 'true'
         run: python -m pip install -r requirements.txt
       - name: Fetch financials
-        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.yes == 'true'
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.yes == 'true' || steps.state.outputs.initial == 'true'
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
         run: python agent.py
       - name: Commit results
-        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.yes == 'true'
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.yes == 'true' || steps.state.outputs.initial == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
